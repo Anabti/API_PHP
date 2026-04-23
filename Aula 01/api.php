@@ -30,21 +30,39 @@
             //echo "AQUI AÇÕES DO MÉTODO POST";
             $dados = json_decode(file_get_contents('php://input'), true);
             //print_r($dados);
+
+            //VERRIFICA SE OS CAMPOS OBRIGATÓRIOS FORAM PREENCHIDOS
+            if (!isset($dados["id"]) ||!isset($dados["nome"])  ||!isset($dados["email"])){
+                http_response_code(400);
+                echo json_encode(["erro" => "Dados incompletos."],JSON_UNESCAPED_UNICODE);
+                exit;
+            }   
+
+            //CRIA UM NOVO USÚARIO
             $novoUsuario = [
                 "id" => $dados["id"],
                 "nome" => $dados["nome"],
                 "email" => $dados["email"]
             ];
 
+            //ADICIONA AO ARRAY DE USÚARIOS
+            $usuarios[] = $novoUsuario;
+
+            //SALVA O ARRAY AUALIZADO NO ARQUIVO JSON
+            file_put_contents(["mensagem" => "Usuário inseido com sucesso!", "usuarios" => $usuarios],JSON_UNESCAPED_UNICODE);
+
             //Adiciona o novo usuário ao array existente
-            array_push($usuarios, $novoUsuario);
-            echo json_encode('Usuário inserido com sucesso!');
-            print_r($usuarios);
+            // //array_push($usuarios, $novoUsuario);
+            // echo json_encode('Usuário inserido com sucesso!');
+            //print_r($usuarios);
 
             break;
         default :
-            echo "MÉTODO NÃO ENCONTRADO!";
-            break;
+           // echo "MÉTODO NÃO ENCONTRADO!";
+           // break;
+           http_response_code(405); //Método não permitido
+           echo json_encode(["erro" => "Método não permitido!"],JSON_UNESCAPED_UNICODE);
+           break;
     }
 
     //CONTEÚDO
